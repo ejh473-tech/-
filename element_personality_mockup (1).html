@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>주기율표 원소 성격 테스트 - 시안</title>
+  <style>
+    :root {
+      --bg1: #0b1020;
+      --bg2: #171d33;
+      --card: rgba(255,255,255,0.08);
+      --card-strong: rgba(255,255,255,0.13);
+      --line: rgba(255,255,255,0.12);
+      --text: #f7f8fc;
+      --sub: #b6bdd3;
+      --accent: #8ab4ff;
+      --accent-soft: rgba(138,180,255,0.18);
+      --shadow: 0 22px 60px rgba(0,0,0,0.35);
+      --radius: 26px;
+      --element-color: #8ab4ff;
+      --element-soft: rgba(138,180,255,0.16);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 18%, rgba(102, 214, 255, 0.18), transparent 28%),
+        radial-gradient(circle at 88% 12%, rgba(255, 170, 112, 0.16), transparent 26%),
+        radial-gradient(circle at 80% 82%, rgba(175, 141, 255, 0.18), transparent 26%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+      display: flex;
+      justify-content: center;
+      padding: 26px 14px 48px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 430px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      color: var(--sub);
+      font-size: 13px;
+      letter-spacing: -0.02em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7effc2, #7bb2ff);
+      box-shadow: 0 0 12px rgba(126, 255, 194, 0.8);
+    }
+
+    .app {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      min-height: 820px;
+    }
+
+    .glow, .glow2 {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.55;
+      pointer-events: none;
+    }
+    .glow {
+      width: 180px;
+      height: 180px;
+      background: rgba(123,178,255,0.35);
+      right: -20px;
+      top: 90px;
+    }
+    .glow2 {
+      width: 160px;
+      height: 160px;
+      background: rgba(255,177,102,0.28);
+      left: -40px;
+      bottom: 120px;
+    }
+
+    .screen {
+      display: none;
+      padding: 22px 20px 24px;
+      position: relative;
+      z-index: 1;
+      min-height: 820px;
+    }
+
+    .screen.active { display: block; }
+
+    .hero {
+      padding-top: 8px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #dde4ff;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      margin-top: 14px;
+      font-size: 33px;
+      line-height: 1.14;
+      letter-spacing: -0.04em;
+    }
+
+    .lead {
+      margin-top: 12px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--sub);
+      letter-spacing: -0.02em;
+    }
+
+    .periodic-grid {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .tile {
+      position: relative;
+      padding: 12px 10px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+      border: 1px solid rgba(255,255,255,0.12);
+      min-height: 88px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+
+    .tile::after {
+      content: "";
+      position: absolute;
+      inset: auto -12px -18px auto;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      filter: blur(8px);
+    }
+
+    .tile-num {
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 10px;
+    }
+
+    .tile-symbol {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .tile-name {
+      margin-top: 8px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.84);
+    }
+
+    .info-card,
+    .question-card,
+    .result-card,
+    .share-card,
+    .preview-card,
+    .notes,
+    .type-grid {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .info-pill {
+      padding: 12px 10px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+    }
+
+    .info-pill strong {
+      display: block;
+      font-size: 17px;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+
+    .info-pill span {
+      font-size: 12px;
+      color: var(--sub);
+    }
+
+    .cta-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .answer-btn {
+      width: 100%;
+      border-radius: 18px;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .btn-primary {
+      padding: 16px 18px;
+      background: linear-gradient(135deg, rgba(123,178,255,0.95), rgba(170,141,255,0.92));
+      color: #06101f;
+      font-weight: 800;
+      box-shadow: 0 16px 30px rgba(91, 136, 255, 0.35);
+    }
+
+    .btn-secondary {
+      padding: 16px 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover, .btn-secondary:hover, .answer-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .progress-wrap {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--sub);
+      font-size: 13px;
+    }
+
+    .progress-track {
+      margin-top: 10px;
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(128,224,255,0.95), rgba(191,154,255,0.95));
+      box-shadow: 0 0 20px rgba(128,224,255,0.4);
+      transition: width 0.28s ease;
+    }
+
+    .question-card {
+      margin-top: 18px;
+      padding: 22px 18px 18px;
+    }
+
+    .question-kicker {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #dfe6ff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .question-text {
+      margin-top: 14px;
+      font-size: 29px;
+      line-height: 1.28;
+      letter-spacing: -0.045em;
+    }
+
+    .question-sub {
+      margin-top: 12px;
+      color: var(--sub);
+      font-size: 14px;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+    }
+
+    .answers {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .answer-btn {
+      padding: 18px 16px;
+      text-align: left;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+      overflow: hidden;
+      min-height: 102px;
+    }
+
+    .answer-btn::before {
+      content: "";
+      position: absolute;
+      inset: auto -20px -24px auto;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+      filter: blur(6px);
+    }
+
+    .answer-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.12);
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .answer-title {
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.45;
+      letter-spacing: -0.03em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .answer-hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--sub);
+      position: relative;
+      z-index: 1;
+    }
+
+    .element-head {
+      display: grid;
+      grid-template-columns: 108px 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .result-tile {
+      padding: 12px;
+      min-height: 122px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--element-soft) 70%, rgba(255,255,255,0.12)), rgba(255,255,255,0.04));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 12px 28px rgba(0,0,0,0.18);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-tile::after {
+      content: "";
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      right: -16px;
+      bottom: -18px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--element-color) 65%, transparent);
+      opacity: 0.25;
+      filter: blur(6px);
+    }
+
+    .result-tile .tile-symbol {
+      font-size: 50px;
+      letter-spacing: -0.05em;
+    }
+
+    .result-meta {
+      font-size: 13px;
+      color: var(--sub);
+    }
+
+    .result-title {
+      font-size: 31px;
+      line-height: 1.14;
+      letter-spacing: -0.045em;
+      margin-top: 4px;
+    }
+
+    .result-tagline {
+      margin-top: 8px;
+      font-size: 15px;
+      line-height: 1.55;
+      color: #ecf2ff;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .chip {
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #ebf2ff;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .desc {
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--sub);
+      letter-spacing: -0.02em;
+    }
+
+    .detail-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .detail-box {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .detail-title {
+      font-size: 13px;
+      color: #ecf1ff;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .detail-copy {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--sub);
+    }
+
+    .share-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+    }
+
+    .mini-card {
+      margin-top: 14px;
+      border-radius: 24px;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 84% 14%, color-mix(in srgb, var(--element-color) 45%, transparent), transparent 26%),
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .mini-sub {
+      font-size: 12px;
+      color: #eef3ff;
+      opacity: 0.84;
+    }
+
+    .mini-title {
+      margin-top: 10px;
+      font-size: 24px;
+      line-height: 1.25;
+      letter-spacing: -0.04em;
+    }
+
+    .mini-text {
+      margin-top: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.85);
+      max-width: 260px;
+    }
+
+    .preview-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .preview-tile {
+      padding: 12px 10px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .preview-tile:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .preview-symbol {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .preview-name {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--sub);
+    }
+
+    .notes {
+      padding-top: 16px;
+    }
+
+    .notes h3 {
+      font-size: 16px;
+      letter-spacing: -0.03em;
+    }
+
+    .notes ul {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: var(--sub);
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.56);
+    }
+
+    .hidden { display: none; }
+
+    @media (max-width: 380px) {
+      h1 { font-size: 30px; }
+      .question-text { font-size: 26px; }
+      .result-title { font-size: 28px; }
+      .periodic-grid, .preview-grid { gap: 8px; }
+      .element-head { grid-template-columns: 94px 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div class="badge"><span class="dot"></span>모바일 퀴즈 시안</div>
+      <div>Element Persona Demo</div>
+    </div>
+
+    <main class="app">
+      <div class="glow"></div>
+      <div class="glow2"></div>
+
+      <section class="screen active" id="intro-screen">
+        <div class="hero">
+          <div class="eyebrow">주기율표 × 성격 테스트</div>
+          <h1>나를 닮은<br />원소 기호는?</h1>
+          <p class="lead">
+            테스트형 콘텐츠 흐름을 참고해 만든 원본 시안입니다.<br />
+            12개의 A/B 질문을 지나면 가장 닮은 원소와 보조 성향까지 보여줍니다.
+          </p>
+        </div>
+
+        <div class="periodic-grid" id="hero-grid"></div>
+
+        <div class="info-card">
+          <h3>이 시안에서 보이는 포인트</h3>
+          <div class="info-grid">
+            <div class="info-pill"><strong>12</strong><span>빠른 A/B 문항</span></div>
+            <div class="info-pill"><strong>8</strong><span>원소 결과 타입</span></div>
+            <div class="info-pill"><strong>2</strong><span>주 결과 + 보조 성향</span></div>
+          </div>
+          <div class="cta-row">
+            <button class="btn-primary" id="start-btn">시안 체험 시작</button>
+            <button class="btn-secondary" id="jump-result-btn">결과 카드 먼저 보기</button>
+          </div>
+        </div>
+
+        <div class="notes">
+          <h3>콘셉트 메모</h3>
+          <ul>
+            <li>원소 기호가 강하게 보이도록 카드 중심 UI로 설계</li>
+            <li>결과 페이지는 저장·공유 카드처럼 보이게 구성</li>
+            <li>복합형이 자연스럽게 나오도록 보조 성향도 함께 표시</li>
+          </ul>
+        </div>
+
+        <div class="footer-note">브랜드/문항/톤은 서비스에 맞게 바로 수정 가능한 데모입니다.</div>
+      </section>
+
+      <section class="screen" id="quiz-screen">
+        <div class="progress-wrap">
+          <div id="progress-label">1 / 12</div>
+          <div id="progress-hint">답할수록 결과가 선명해져요</div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="question-card">
+          <span class="question-kicker">Question</span>
+          <h2 class="question-text" id="question-text"></h2>
+          <p class="question-sub" id="question-sub"></p>
+          <div class="answers">
+            <button class="answer-btn" id="answer-a">
+              <div class="answer-mark">A</div>
+              <div class="answer-title" id="answer-a-title"></div>
+              <div class="answer-hint" id="answer-a-hint"></div>
+            </button>
+            <button class="answer-btn" id="answer-b">
+              <div class="answer-mark">B</div>
+              <div class="answer-title" id="answer-b-title"></div>
+              <div class="answer-hint" id="answer-b-hint"></div>
+            </button>
+          </div>
+        </div>
+
+        <div class="notes">
+          <h3>운영 포인트</h3>
+          <ul>
+            <li>문항은 더 짧고 직관적으로 줄이면 공유성이 좋아집니다.</li>
+            <li>질문 카테고리를 일/관계/휴식으로 섞으면 결과 설명이 풍성해집니다.</li>
+            <li>실서비스에서는 카카오 공유용 결과 이미지 카드 추가를 추천합니다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="screen" id="result-screen">
+        <div class="result-card" id="result-card">
+          <div class="element-head">
+            <div class="result-tile">
+              <div class="tile-num" id="result-number"></div>
+              <div class="tile-symbol" id="result-symbol"></div>
+              <div class="tile-name" id="result-name-small"></div>
+            </div>
+            <div>
+              <div class="result-meta" id="result-meta"></div>
+              <h2 class="result-title" id="result-title"></h2>
+              <p class="result-tagline" id="result-tagline"></p>
+            </div>
+          </div>
+
+          <div class="chips" id="chip-wrap"></div>
+          <p class="desc" id="result-desc"></p>
+
+          <div class="detail-grid">
+            <div class="detail-box">
+              <div class="detail-title">강점</div>
+              <div class="detail-copy" id="strength-copy"></div>
+            </div>
+            <div class="detail-box">
+              <div class="detail-title">주의 포인트</div>
+              <div class="detail-copy" id="caution-copy"></div>
+            </div>
+            <div class="detail-box">
+              <div class="detail-title">찰떡 케미</div>
+              <div class="detail-copy" id="match-copy"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="share-card">
+          <h3>결과 카드 느낌 미리보기</h3>
+          <div class="mini-card" id="mini-card">
+            <div class="mini-sub" id="mini-sub">주기율표 원소 성격 테스트 결과</div>
+            <div class="mini-title" id="mini-title"></div>
+            <div class="mini-text" id="mini-text"></div>
+          </div>
+          <div class="cta-row">
+            <button class="btn-primary" id="copy-btn">결과 문구 복사</button>
+            <button class="btn-secondary" id="restart-btn">다시 테스트하기</button>
+          </div>
+        </div>
+
+        <div class="preview-card">
+          <h3>다른 결과 미리보기</h3>
+          <div class="preview-grid" id="preview-grid"></div>
+        </div>
+
+        <div class="footer-note">이 화면을 바탕으로 실제 서비스용 결과 이미지, 공유 문구, 카피를 붙일 수 있습니다.</div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const elementTypes = {
+      H: {
+        number: 1,
+        symbol: 'H',
+        name: '수소형',
+        short: 'Hydrogen',
+        label: '가볍게 먼저 움직이는 개척자',
+        desc: '새로운 분위기와 낯선 환경을 빠르게 탐색합니다. 완전히 준비되지 않아도 일단 가볍게 발을 들이며 흐름을 만드는 타입이에요.',
+        strengths: '호기심이 많고 적응이 빠릅니다. 시작점이 필요한 순간, 가장 먼저 판을 여는 힘이 있습니다.',
+        caution: '흥미가 식으면 집중이 분산될 수 있어요. 방향을 하나만 정해도 훨씬 강해집니다.',
+        match: 'Cu형과 만나면 연결력이 생기고, O형과 만나면 에너지가 크게 살아납니다.',
+        chips: ['호기심', '빠른 적응', '첫 스타터'],
+        color: '#7bd7ff',
+        soft: 'rgba(123,215,255,0.20)'
+      },
+      He: {
+        number: 2,
+        symbol: 'He',
+        name: '헬륨형',
+        short: 'Helium',
+        label: '차분하게 자기 페이스를 지키는 관찰자',
+        desc: '쉽게 휩쓸리지 않고, 사람과 상황을 한 발짝 떨어져 봅니다. 조용하지만 안정적인 분위기로 팀의 균형을 잡아줍니다.',
+        strengths: '감정 소모가 적고 침착합니다. 위기 상황에서도 흐름을 차분하게 정리하는 힘이 있어요.',
+        caution: '너무 멀리 떨어져 있으면 차갑게 보일 수 있어요. 마음을 조금만 먼저 열어도 매력이 훨씬 잘 전해집니다.',
+        match: 'Fe형의 책임감과 잘 맞고, H형의 가벼움을 받아들이면 더 유연해집니다.',
+        chips: ['마이페이스', '안정감', '침착함'],
+        color: '#c7b5ff',
+        soft: 'rgba(199,181,255,0.20)'
+      },
+      C: {
+        number: 6,
+        symbol: 'C',
+        name: '탄소형',
+        short: 'Carbon',
+        label: '관계와 역할을 유연하게 엮는 설계자',
+        desc: '상황에 맞춰 역할을 바꾸고, 여러 사람 사이의 연결점을 잘 찾습니다. 딱딱한 구조보다 조합과 확장을 잘 다루는 타입이에요.',
+        strengths: '융통성이 좋고 여러 맥락을 동시에 볼 수 있습니다. 변화 속에서도 자기 역할을 새로 만들 줄 압니다.',
+        caution: '너무 많은 가능성을 열어두면 결정을 미루기 쉬워요. 우선순위를 정하면 더 빛납니다.',
+        match: 'Si형과 만나면 구조가 생기고, Cu형과 만나면 사람 사이 연결이 더 커집니다.',
+        chips: ['융통성', '조합형', '관계 감각'],
+        color: '#96f1c9',
+        soft: 'rgba(150,241,201,0.20)'
+      },
+      O: {
+        number: 8,
+        symbol: 'O',
+        name: '산소형',
+        short: 'Oxygen',
+        label: '주변에 숨을 불어넣는 에너지 공급자',
+        desc: '사람들의 반응을 끌어올리고 팀에 활기를 넣습니다. 함께 있을수록 분위기가 살아나는 타입이에요.',
+        strengths: '분위기를 읽고 에너지를 전달하는 능력이 좋습니다. 사람들의 의욕을 끌어올리는 촉이 있어요.',
+        caution: '모든 사람의 온도를 맞추려다 지칠 수 있습니다. 내 에너지를 지키는 루틴도 꼭 필요해요.',
+        match: 'H형과 만나면 시작이 빨라지고, Fe형과 만나면 에너지가 현실적인 추진력으로 바뀝니다.',
+        chips: ['분위기 메이커', '활력', '동기 부여'],
+        color: '#ffb067',
+        soft: 'rgba(255,176,103,0.22)'
+      },
+      Na: {
+        number: 11,
+        symbol: 'Na',
+        name: '나트륨형',
+        short: 'Sodium',
+        label: '반응 빠르고 직진하는 추진형',
+        desc: '생각만 하다 멈추기보다 바로 반응하며 판을 움직입니다. 속도감과 결단이 강점인 행동파예요.',
+        strengths: '결정이 빠르고 추진력이 좋습니다. 정체된 흐름에 불을 붙이는 데 강합니다.',
+        caution: '속도가 너무 빠르면 주변이 놀랄 수 있어요. 한 박자만 더 점검하면 완성도가 올라갑니다.',
+        match: 'Si형이 옆에 있으면 추진력이 구조를 만나고, He형이 있으면 속도 조절이 좋아집니다.',
+        chips: ['즉시 반응', '추진력', '직진'],
+        color: '#ffd66e',
+        soft: 'rgba(255,214,110,0.22)'
+      },
+      Si: {
+        number: 14,
+        symbol: 'Si',
+        name: '규소형',
+        short: 'Silicon',
+        label: '로직과 시스템을 세우는 전략가',
+        desc: '감으로만 가지 않고 구조와 패턴을 먼저 봅니다. 문제를 반복 가능하게 정리하는 데 강한 타입이에요.',
+        strengths: '분석력과 구조화 능력이 좋아서 일의 틀을 빠르게 세웁니다. 복잡한 문제를 간단히 정리할 줄 알아요.',
+        caution: '완벽한 구조를 기다리다 시작이 늦어질 수 있어요. 80점 상태에서 먼저 움직이는 연습이 도움이 됩니다.',
+        match: 'Na형과 만나면 실행이 붙고, C형과 만나면 구조가 더 유연해집니다.',
+        chips: ['분석형', '시스템', '효율'],
+        color: '#8ab4ff',
+        soft: 'rgba(138,180,255,0.20)'
+      },
+      Fe: {
+        number: 26,
+        symbol: 'Fe',
+        name: '철형',
+        short: 'Iron',
+        label: '흔들리지 않는 든든한 버팀목',
+        desc: '중심을 잡고 끝까지 책임지는 힘이 있습니다. 맡은 일은 결국 해내는 신뢰형이에요.',
+        strengths: '책임감이 강하고 안정적으로 완수합니다. 팀에서 믿고 맡길 수 있는 축이 됩니다.',
+        caution: '혼자 너무 많이 버티면 무거워질 수 있어요. 도움을 나누는 것도 강점입니다.',
+        match: 'Cu형과 만나면 단단함에 소통이 더해지고, O형과 만나면 팀 에너지가 살아납니다.',
+        chips: ['책임감', '지속력', '버팀목'],
+        color: '#ff8fa3',
+        soft: 'rgba(255,143,163,0.20)'
+      },
+      Cu: {
+        number: 29,
+        symbol: 'Cu',
+        name: '구리형',
+        short: 'Copper',
+        label: '사람과 아이디어를 이어주는 커뮤니케이터',
+        desc: '정보의 흐름을 만들고, 어색한 사람들 사이를 자연스럽게 연결합니다. 분위기와 맥락을 함께 읽는 타입이에요.',
+        strengths: '소통이 부드럽고 연결 감각이 탁월합니다. 팀 안에서 정보와 감정을 자연스럽게 흘리게 만듭니다.',
+        caution: '모두를 배려하느라 내 의사가 흐려질 수 있어요. 기준을 분명히 하면 훨씬 강해집니다.',
+        match: 'Fe형과 만나면 안정적이고, H형과 만나면 확산력이 좋아집니다.',
+        chips: ['소통', '연결', '분위기 조율'],
+        color: '#ffa97a',
+        soft: 'rgba(255,169,122,0.20)'
+      }
+    };
+
+    const questions = [
+      {
+        text: '새로운 환경에 들어가면?',
+        sub: '처음 반응하는 방식이 당신의 기본 에너지를 보여줘요.',
+        A: { title: '재밌는 포인트부터 빠르게 살핀다', hint: '호기심으로 판을 열기', type: 'H' },
+        B: { title: '적응하자마자 바로 움직이기 시작한다', hint: '생각보다 행동이 먼저', type: 'Na' }
+      },
+      {
+        text: '사람 많은 자리에 가면?',
+        sub: '당신이 모임에서 쓰는 에너지의 방향을 골라보세요.',
+        A: { title: '내가 분위기를 띄우는 편이다', hint: '활력을 넣는 타입', type: 'O' },
+        B: { title: '내 페이스를 지키며 조용히 본다', hint: '흐름을 관찰하는 타입', type: 'He' }
+      },
+      {
+        text: '둘 사이가 어색해 보이면?',
+        sub: '관계 사이에서 당신이 자연스럽게 맡는 역할입니다.',
+        A: { title: '둘을 부드럽게 이어준다', hint: '연결과 소통', type: 'Cu' },
+        B: { title: '상황에 맞게 내 역할을 바꿔 끼어든다', hint: '유연한 포지셔닝', type: 'C' }
+      },
+      {
+        text: '일을 맡으면 더 가까운 쪽은?',
+        sub: '문제를 다루는 방식에서 핵심 강점이 드러나요.',
+        A: { title: '끝까지 책임지고 들고 간다', hint: '묵직한 완수형', type: 'Fe' },
+        B: { title: '구조부터 짜고 효율을 본다', hint: '논리적인 설계형', type: 'Si' }
+      },
+      {
+        text: '처음 듣는 주제가 나오면?',
+        sub: '낯선 대상을 마주했을 때의 반응을 골라보세요.',
+        A: { title: '질문을 많이 하며 탐색한다', hint: '궁금증으로 접근', type: 'H' },
+        B: { title: '공통점을 찾아 대화를 연결한다', hint: '맥락을 잇는 편', type: 'Cu' }
+      },
+      {
+        text: '일정이 갑자기 바뀌면?',
+        sub: '예상 밖 변수 앞에서 어떤 태도를 보이나요?',
+        A: { title: '자극적이라 오히려 재밌다', hint: '즉시 반응하는 편', type: 'Na' },
+        B: { title: '한 번 거리를 두고 흐름을 본다', hint: '차분히 보는 편', type: 'He' }
+      },
+      {
+        text: '팀 프로젝트에서 나는?',
+        sub: '협업 상황에서 무의식적으로 맡는 포지션입니다.',
+        A: { title: '비는 역할을 유연하게 메운다', hint: '조합과 연결', type: 'C' },
+        B: { title: '기준을 잡고 중심을 세운다', hint: '안정적인 축', type: 'Fe' }
+      },
+      {
+        text: '문제를 풀 때 더 가까운 쪽은?',
+        sub: '해결 방식의 핵심 엔진이 무엇인지 선택해보세요.',
+        A: { title: '사람들 에너지를 끌어올려 해결한다', hint: '활기를 통해 돌파', type: 'O' },
+        B: { title: '원인과 패턴을 정리해 시스템을 만든다', hint: '로직으로 정리', type: 'Si' }
+      },
+      {
+        text: '쉬는 날에 더 끌리는 건?',
+        sub: '휴식에서도 드러나는 기본 모드를 골라보세요.',
+        A: { title: '가볍게 떠나며 새 경험 모으기', hint: '새로움을 찾는 편', type: 'H' },
+        B: { title: '사람 만나고 교류가 많은 일정', hint: '연결에서 충전', type: 'Cu' }
+      },
+      {
+        text: '스트레스를 받으면?',
+        sub: '힘들 때 보이는 방어 방식도 결과에 반영됩니다.',
+        A: { title: '혼자 정리하며 감정과 거리를 둔다', hint: '조용한 회복', type: 'He' },
+        B: { title: '루틴을 붙잡고 할 일부터 끝낸다', hint: '버티며 정리', type: 'Fe' }
+      },
+      {
+        text: '자주 듣는 말은?',
+        sub: '주변이 당신을 어떻게 느끼는지 떠올려보세요.',
+        A: { title: '적응력 좋고 상황 파악이 빠르다', hint: '유연한 감각', type: 'C' },
+        B: { title: '결단이 빠르고 추진력이 세다', hint: '속도감 있는 편', type: 'Na' }
+      },
+      {
+        text: '가장 멋진 리더는?',
+        sub: '당신이 끌리는 리더상은 곧 성향의 힌트가 됩니다.',
+        A: { title: '팀에 숨을 불어넣는 타입', hint: '사람의 온도를 올리는 리더', type: 'O' },
+        B: { title: '큰 그림과 구조를 세우는 타입', hint: '시스템을 만드는 리더', type: 'Si' }
+      }
+    ];
+
+    const heroOrder = ['H', 'He', 'C', 'O', 'Na', 'Si', 'Fe', 'Cu'];
+    const state = {
+      current: 0,
+      answers: [],
+      scores: Object.fromEntries(heroOrder.map(key => [key, 0]))
+    };
+
+    const introScreen = document.getElementById('intro-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const heroGrid = document.getElementById('hero-grid');
+    const previewGrid = document.getElementById('preview-grid');
+    const progressLabel = document.getElementById('progress-label');
+    const progressBar = document.getElementById('progress-bar');
+    const questionText = document.getElementById('question-text');
+    const questionSub = document.getElementById('question-sub');
+    const answerATitle = document.getElementById('answer-a-title');
+    const answerAHint = document.getElementById('answer-a-hint');
+    const answerBTitle = document.getElementById('answer-b-title');
+    const answerBHint = document.getElementById('answer-b-hint');
+    const resultNumber = document.getElementById('result-number');
+    const resultSymbol = document.getElementById('result-symbol');
+    const resultNameSmall = document.getElementById('result-name-small');
+    const resultMeta = document.getElementById('result-meta');
+    const resultTitle = document.getElementById('result-title');
+    const resultTagline = document.getElementById('result-tagline');
+    const chipWrap = document.getElementById('chip-wrap');
+    const resultDesc = document.getElementById('result-desc');
+    const strengthCopy = document.getElementById('strength-copy');
+    const cautionCopy = document.getElementById('caution-copy');
+    const matchCopy = document.getElementById('match-copy');
+    const miniCard = document.getElementById('mini-card');
+    const miniTitle = document.getElementById('mini-title');
+    const miniText = document.getElementById('mini-text');
+
+    function renderHeroGrid() {
+      heroGrid.innerHTML = heroOrder.map(key => {
+        const t = elementTypes[key];
+        return `
+          <div class="tile" style="background: linear-gradient(180deg, ${t.soft}, rgba(255,255,255,0.05)); border-color: rgba(255,255,255,0.12);">
+            <div class="tile-num">${t.number}</div>
+            <div class="tile-symbol">${t.symbol}</div>
+            <div class="tile-name">${t.name}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderPreviewGrid() {
+      previewGrid.innerHTML = heroOrder.map(key => {
+        const t = elementTypes[key];
+        return `
+          <button class="preview-tile" data-type="${key}">
+            <div class="preview-symbol">${t.symbol}</div>
+            <div class="preview-name">${t.name}</div>
+          </button>
+        `;
+      }).join('');
+
+      previewGrid.querySelectorAll('.preview-tile').forEach(btn => {
+        btn.addEventListener('click', () => showResult(btn.dataset.type, heroOrder.find(k => k !== btn.dataset.type)));
+      });
+    }
+
+    function showScreen(id) {
+      [introScreen, quizScreen, resultScreen].forEach(screen => screen.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function startQuiz() {
+      state.current = 0;
+      state.answers = [];
+      state.scores = Object.fromEntries(heroOrder.map(key => [key, 0]));
+      renderQuestion();
+      showScreen('quiz-screen');
+    }
+
+    function renderQuestion() {
+      const q = questions[state.current];
+      progressLabel.textContent = `${state.current + 1} / ${questions.length}`;
+      progressBar.style.width = `${((state.current) / questions.length) * 100}%`;
+      questionText.textContent = q.text;
+      questionSub.textContent = q.sub;
+      answerATitle.textContent = q.A.title;
+      answerAHint.textContent = q.A.hint;
+      answerBTitle.textContent = q.B.title;
+      answerBHint.textContent = q.B.hint;
+    }
+
+    function answer(choice) {
+      const q = questions[state.current];
+      const picked = q[choice];
+      state.answers.push({ index: state.current, choice, type: picked.type });
+      state.scores[picked.type] += 1;
+      state.current += 1;
+
+      if (state.current < questions.length) {
+        renderQuestion();
+        progressBar.style.width = `${((state.current) / questions.length) * 100}%`;
+      } else {
+        progressBar.style.width = '100%';
+        const result = calculateResult();
+        showResult(result.primary, result.secondary, result.meta);
+      }
+    }
+
+    function calculateResult() {
+      const ranked = Object.entries(state.scores).sort((a, b) => {
+        if (b[1] !== a[1]) return b[1] - a[1];
+        const lastA = getLastAppearanceIndex(a[0]);
+        const lastB = getLastAppearanceIndex(b[0]);
+        return lastB - lastA;
+      });
+
+      const [primaryKey, primaryScore] = ranked[0];
+      const [secondaryKey, secondaryScore] = ranked[1];
+      let meta = `${primaryScore}점으로 가장 강하게 나온 결과`;
+      if (secondaryScore === primaryScore) {
+        meta = `${primaryScore}점 동률 · 보조 성향까지 함께 반영`;
+      } else if (secondaryScore === primaryScore - 1) {
+        meta = `${primaryScore}점 주성향 + ${secondaryScore}점 보조 성향`;
+      }
+      return { primary: primaryKey, secondary: secondaryKey, meta };
+    }
+
+    function getLastAppearanceIndex(typeKey) {
+      const found = [...state.answers].reverse().find(item => item.type === typeKey);
+      return found ? found.index : -1;
+    }
+
+    function setTheme(typeKey) {
+      const t = elementTypes[typeKey];
+      document.documentElement.style.setProperty('--element-color', t.color);
+      document.documentElement.style.setProperty('--element-soft', t.soft);
+    }
+
+    function showResult(primaryKey, secondaryKey, metaText) {
+      const t = elementTypes[primaryKey];
+      const secondary = secondaryKey ? elementTypes[secondaryKey] : null;
+      setTheme(primaryKey);
+      resultNumber.textContent = t.number;
+      resultSymbol.textContent = t.symbol;
+      resultNameSmall.textContent = t.short;
+      resultMeta.textContent = metaText || '시안용 예시 결과';
+      resultTitle.textContent = `${t.name}`;
+      resultTagline.textContent = t.label;
+      resultDesc.textContent = t.desc;
+      strengthCopy.textContent = t.strengths;
+      cautionCopy.textContent = t.caution;
+      matchCopy.textContent = secondary
+        ? `${t.match} 보조 성향은 ${secondary.symbol} ${secondary.name} 느낌이 함께 보여요.`
+        : t.match;
+
+      chipWrap.innerHTML = t.chips.map(chip => `<span class="chip">${chip}</span>`).join('')
+        + (secondary ? `<span class="chip">보조 성향 ${secondary.symbol}</span>` : '');
+
+      miniTitle.textContent = `${t.symbol} ${t.name}`;
+      miniText.textContent = secondary
+        ? `${t.label}. 그런데 안에는 ${secondary.symbol} ${secondary.name}의 결도 함께 있어요.`
+        : `${t.label}. 나를 닮은 원소 기호를 결과 카드처럼 보여주는 화면입니다.`;
+
+      showScreen('result-screen');
+    }
+
+    function copyResultText() {
+      const title = miniTitle.textContent;
+      const text = `${title}\n${resultTagline.textContent}\n${resultDesc.textContent}`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = document.getElementById('copy-btn');
+          const original = btn.textContent;
+          btn.textContent = '복사 완료';
+          setTimeout(() => btn.textContent = original, 1400);
+        }).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      textarea.remove();
+      const btn = document.getElementById('copy-btn');
+      const original = btn.textContent;
+      btn.textContent = '복사 완료';
+      setTimeout(() => btn.textContent = original, 1400);
+    }
+
+    document.getElementById('start-btn').addEventListener('click', startQuiz);
+    document.getElementById('jump-result-btn').addEventListener('click', () => showResult('Fe', 'Cu', '시안용 대표 결과 예시'));
+    document.getElementById('answer-a').addEventListener('click', () => answer('A'));
+    document.getElementById('answer-b').addEventListener('click', () => answer('B'));
+    document.getElementById('restart-btn').addEventListener('click', startQuiz);
+    document.getElementById('copy-btn').addEventListener('click', copyResultText);
+
+    function initFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const view = params.get('view');
+      const primary = params.get('primary');
+      const secondary = params.get('secondary');
+
+      if (view === 'quiz') {
+        startQuiz();
+        return;
+      }
+
+      if (view === 'result' && primary && elementTypes[primary]) {
+        const validSecondary = secondary && elementTypes[secondary] ? secondary : null;
+        showResult(primary, validSecondary, '링크로 바로 보는 결과 카드 시안');
+        return;
+      }
+
+      showScreen('intro-screen');
+    }
+
+    renderHeroGrid();
+    renderPreviewGrid();
+    showResult('Fe', 'Cu', '시안용 대표 결과 예시');
+    initFromQuery();
+  </script>
+</body>
+</html>
